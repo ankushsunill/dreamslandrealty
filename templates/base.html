@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dreamsland Realty CRM{% endblock %}</title>
+    <link rel="icon" type="image/png" sizes="32x16" href="{% static 'img/logodream.png' %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+
+    <script>
+        (function () {
+            const saved = localStorage.getItem('dreamsland-theme');
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.classList.toggle('dark', saved ? saved === 'dark' : prefersDark);
+        })();
+    </script>
+</head>
+
+<body class="bg-gray-100 font-sans transition-colors duration-300">
+    <div class="flex min-h-screen">
+        <!-- Mobile sidebar toggle -->
+        <div class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40 lg:hidden hidden" id="sidebarBackdrop"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar"
+            class="w-64 bg-white border-r shadow-lg fixed top-0 left-0 h-screen z-50 transform -translate-x-full lg:translate-x-0 transition duration-200 ease-in-out">
+            <img src="{% static 'img/logodream.png' %}" alt="" style="height: 100px; margin: 10px; padding-left: 60px;">
+            <div class="p-6 text-center font-bold text-xl border-b">Dreamsland Realty</div>
+            <!-- Include Alpine.js for dropdown toggle functionality -->
+            <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+            <nav class="p-4 space-y-2 text-sm text-dark-700" x-data="{ open: null }">
+
+                <!-- Dashboard -->
+                <div>
+                    <button @click="open === 0 ? open = null : open = 0"
+                        class="w-full flex flex-col items-start px-4 py-2 rounded hover:bg-blue-100 font-bold text-dark-700 uppercase text-xs text-left">
+                        Main Menu
+                        <i class="fas fa-chevron-down text-xs mt-1"></i>
+                    </button>
+                    <div x-show="open === 0" class="pl-4 space-y-1 text-left" x-cloak>
+                        <a href="{% url 'admindashboard' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-tachometer-alt mr-3 text-dark-500"></i>Dashboard
+                        </a>
+                        <a href="{% url 'crm_workspace' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-briefcase mr-3 text-dark-500"></i>CRM Workspace
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Property Management -->
+                <div>
+                    <button @click="open === 1 ? open = null : open = 1"
+                        class="w-full flex flex-col items-start px-4 py-2 rounded hover:bg-blue-100 font-bold text-dark-700 uppercase text-xs text-left">
+                        Property Management
+                        <i class="fas fa-chevron-down text-xs mt-1"></i>
+                    </button>
+                    <div x-show="open === 1" class="pl-4 space-y-1 text-left" x-cloak>
+                        <a href="{% url 'properties' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-home mr-3 text-dark-500"></i>Properties
+                        </a>
+                        <a href="{% url 'property_locations' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-map-marker-alt mr-3 text-dark-500"></i>Locations
+                        </a>
+                        <a href="{% url 'deleted_properties' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-trash mr-3 text-dark-500"></i>Deleted Properties
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Users & Agents -->
+                <div>
+                    <button @click="open === 2 ? open = null : open = 2"
+                        class="w-full flex flex-col items-start px-4 py-2 rounded hover:bg-blue-100 font-bold text-dark-700 uppercase text-xs text-left">
+                        Users & Agents
+                        <i class="fas fa-chevron-down text-xs mt-1"></i>
+                    </button>
+                    <div x-show="open === 2" class="pl-4 space-y-1 text-left" x-cloak>
+                        <a href="{% url 'agents' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-users mr-3 text-dark-500"></i>Agents
+                        </a>
+                        <a href="{% url 'agentsproperties' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-user-tie mr-3 text-dark-500"></i>Agents Properties
+                        </a>
+                        <a href="{% url 'user_list' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-user mr-3 text-dark-500"></i>Users
+                        </a>
+                        <a href="{% url 'registration_list' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-calendar-day mr-3 text-dark-500"></i>Registrations
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Customer Interactions -->
+                <div>
+                    <button @click="open === 3 ? open = null : open = 3"
+                        class="w-full flex flex-col items-start px-4 py-2 rounded hover:bg-blue-100 font-bold text-dark-700 uppercase text-xs text-left">
+                        Customer Interactions
+                        <i class="fas fa-chevron-down text-xs mt-1"></i>
+                    </button>
+                    <div x-show="open === 3" class="pl-4 space-y-1 text-left" x-cloak>
+                        <a href="{% url 'leads_list' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-user-friends mr-3 text-dark-500"></i>Leads
+                        </a>
+                        <a href="{% url 'contact_requests' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-envelope mr-3 text-dark-500"></i>Contact Requests
+                        </a>
+                        <a href="{% url 'customer_actions' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-users-cog mr-3 text-dark-500"></i>Customer Actions
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Insights & Logs -->
+                <div>
+                    <button @click="open === 4 ? open = null : open = 4"
+                        class="w-full flex flex-col items-start px-4 py-2 rounded hover:bg-blue-100 font-bold text-dark-700 uppercase text-xs text-left">
+                        Insights & Logs
+                        <i class="fas fa-chevron-down text-xs mt-1"></i>
+                    </button>
+                    <div x-show="open === 4" class="pl-4 space-y-1 text-left" x-cloak>
+                        <a href="{% url 'analytics' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-chart-line mr-3 text-dark-500"></i>Analytics
+                        </a>
+                        <a href="{% url 'daily_visits' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-calendar-day mr-3 text-dark-500"></i>Daily Visits
+                        </a>
+                        <a href="{% url 'activity_logs' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-history mr-3 text-dark-500"></i>Activity Logs
+                        </a>
+                        <a href="{% url 'unfulfilled_searches' %}" class="block py-1 hover:text-blue-600 text-left">
+                            <i class="fas fa-search mr-3 text-dark-500"></i>Unfulfilled Searches
+                        </a>
+                    </div>
+                </div>
+            </nav>
+
+
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 lg:ml-64 w-full">
+            <!-- Top Navigation -->
+            <header class="bg-white shadow-sm fixed top-0 left-64 right-0 z-40">
+                <div class="flex items-center justify-between px-6 py-4">
+                    <button id="sidebarToggle" class="lg:hidden text-gray-500 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <div class="relative mx-4 flex-1 max-w-md">
+                        <!-- <form method="GET" action="{% url 'search_properties' %}" class="relative mx-4 flex-1 max-w-md">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            </div>
+                            <input type="text" name="query" required
+                                class="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                                placeholder="Search by Property ID, Agent ID, Location, or Name" />
+                            <button type="submit"
+                                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form> -->
+
+
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="hidden md:block text-dark-800">
+                            <span id="currentDate"></span>
+                        </div>
+                        <button id="themeToggle" type="button"
+                            class="px-3 py-2 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 shadow-sm transition flex items-center gap-2"
+                            aria-label="Toggle dark and light theme">
+                            <i id="themeIcon" class="fas fa-moon"></i><span class="hidden sm:inline text-sm font-semibold">Theme</span>
+                        </button>
+                        <button
+                            class="p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dark-500 relative">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                        </button>
+                        <button
+                            class="p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dark-500">
+                            <i class="fas fa-cog text-xl"></i>
+                        </button>
+                        <div class="relative ml-3">
+                            <button id="userMenuButton"
+                                class="flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dark-500">
+                                <img class="h-8 w-8"
+                                    src="https://media.istockphoto.com/id/1131164548/vector/avatar-5.jpg?s=612x612&w=0&k=20&c=CK49ShLJwDxE4kiroCR42kimTuuhvuo2FH5y_6aSgEo="
+                                    alt="">
+                                <span class="ml-2 hidden md:inline-block fw-bold"> ADMIN </span>
+                            </button>
+                            <div id="userMenu"
+                                class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+                                role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    role="menuitem">Your Profile</a>
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    role="menuitem">Settings</a>
+                                <a href="{% url 'logout' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                    role="menuitem">Log out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="p-6 pt-[80px]">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        const sidebar = document.getElementById('sidebar');
+        if (sidebarToggle && sidebar && sidebarBackdrop) {
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('-translate-x-full');
+                sidebarBackdrop.classList.toggle('hidden');
+            });
+            sidebarBackdrop.addEventListener('click', function () {
+                sidebar.classList.add('-translate-x-full');
+                sidebarBackdrop.classList.add('hidden');
+            });
+        }
+
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userMenu = document.getElementById('userMenu');
+        if (userMenuButton && userMenu) {
+            userMenuButton.addEventListener('click', function () {
+                userMenu.classList.toggle('hidden');
+            });
+            document.addEventListener('click', function (event) {
+                if (!userMenu.contains(event.target) && !userMenuButton.contains(event.target)) {
+                    userMenu.classList.add('hidden');
+                }
+            });
+        }
+
+        const dateNode = document.getElementById('currentDate');
+        if (dateNode) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateNode.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        function syncThemeIcon() {
+            if (!themeIcon) return;
+            const isDark = document.documentElement.classList.contains('dark');
+            themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        }
+        syncThemeIcon();
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function () {
+                const isDark = document.documentElement.classList.toggle('dark');
+                localStorage.setItem('dreamsland-theme', isDark ? 'dark' : 'light');
+                syncThemeIcon();
+            });
+        }
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+
+<style>
+    html {
+        scroll-behavior: smooth;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    body {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+
+    :root {
+        --crm-bg: #f8fafc;
+        --crm-surface: #ffffff;
+        --crm-surface-soft: #f1f5f9;
+        --crm-border: #e2e8f0;
+        --crm-text: #0f172a;
+        --crm-muted: #64748b;
+    }
+
+    html.dark {
+        --crm-bg: #020617;
+        --crm-surface: #0f172a;
+        --crm-surface-soft: #111827;
+        --crm-border: #263244;
+        --crm-text: #e5e7eb;
+        --crm-muted: #94a3b8;
+        color-scheme: dark;
+    }
+
+    html.dark body, html.dark .bg-gray-50, html.dark .bg-gray-100 { background: var(--crm-bg) !important; color: var(--crm-text) !important; }
+    html.dark .bg-white { background: var(--crm-surface) !important; }
+    html.dark .bg-gray-50 { background: var(--crm-surface-soft) !important; }
+    html.dark .text-gray-800, html.dark .text-dark-800, html.dark .text-dark-700, html.dark .text-dark-900, html.dark .text-dark-500 { color: var(--crm-text) !important; }
+    html.dark .text-gray-500, html.dark .text-gray-600, html.dark .text-gray-700, html.dark .text-gray-400 { color: var(--crm-muted) !important; }
+    html.dark .border, html.dark .border-gray-100, html.dark .border-gray-200, html.dark .border-gray-300 { border-color: var(--crm-border) !important; }
+    html.dark input, html.dark select, html.dark textarea { background: #111827 !important; color: var(--crm-text) !important; border-color: var(--crm-border) !important; }
+    html.dark header, html.dark aside { background: rgba(15, 23, 42, 0.96) !important; border-color: var(--crm-border) !important; }
+    .crm-card { background: var(--crm-surface); border: 1px solid var(--crm-border); color: var(--crm-text); }
+    .crm-muted { color: var(--crm-muted); }
+
+</style>
+
+</html>

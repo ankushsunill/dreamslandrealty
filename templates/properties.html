@@ -1,0 +1,479 @@
+{% extends "base.html" %}
+
+{% block title %}Properties | Dreamsland Realty{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Header and Action Buttons -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Our Properties</h1>
+        <div class="flex space-x-3">
+            <button id="deleteSelected"
+                class="hidden px-4 py-2 bg-red-600 text-white rounded-lg shadow hover:bg-red-700 transition">
+                Delete Selected
+            </button>
+            <button id="openAddModal"
+                class="px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg shadow hover:bg-indigo-700 transition flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        clip-rule="evenodd" />
+                </svg>
+                Add Property
+            </button>
+        </div>
+    </div>
+
+    <!-- Properties Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for property in properties %}
+        <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+            <!-- Image with Overlay -->
+            <div class="relative h-64 overflow-hidden">
+                {% if property.images %}
+                <img src="{{ property.images.0 }}" alt="{{ property.name }}" class="w-full h-full object-cover">
+                {% else %}
+                <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                </div>
+                {% endif %}
+
+                <!-- Overlay Content -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/60 to-black/30 flex flex-col justify-between p-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span
+                                class="inline-block px-2 py-1 bg-white/90 text-gray-800 text-xs font-semibold rounded">
+                                {{ property.location }}
+                            </span>
+
+                        </div>
+                        <div class="text-white">
+                            <span class="text-lg font-bold">{{ property.formatted_price }}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <h3 class="text-white font-bold text-xl">{{ property.name }}</h3>
+                            <p class="text-white/90 text-sm">{{ property.propertyId }}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="update-btn p-2 bg-white/20 rounded-full hover:bg-white/30 transition"
+                                data-property-id="{{ property.propertyId }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path
+                                        d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                            </button>
+                            <button class="delete-btn p-2 bg-white/20 rounded-full hover:bg-white/30 transition"
+                                data-property-id="{{ property.propertyId }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 20 20"
+                                    fill="currentColor">
+                                    <path fill-rule="evenodd"
+                                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- JSON Hidden Field (Already present) -->
+            <script type="application/json" id="property-{{ property.propertyId }}">
+    {{ property|json_script:"ignore" }}
+</script>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Add Property Modal -->
+<div id="addPropertyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[100vh] overflow-hidden">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center border-b p-6">
+                <h2 class="text-2xl font-bold text-gray-800">Add New Property</h2>
+                <button id="closeAddModal" class="text-gray-500 hover:text-gray-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form action="{% url 'add_property' %}" method="POST" enctype="multipart/form-data" class="p-6 space-y-6">
+                {% csrf_token %}
+
+                <!-- Tab Navigation -->
+                <div class="border-b border-gray-200">
+                    <nav class="flex space-x-8">
+                        <button type="button"
+                            class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-indigo-500 text-indigo-600"
+                            data-tab="basic-info">
+                            Basic Info
+                        </button>
+                        <button type="button"
+                            class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                            data-tab="images">
+                            Images
+                        </button>
+                        <button type="button"
+                            class="tab-btn py-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                            data-tab="additional-info">
+                            Additional Info
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="space-y-6">
+                    <!-- Basic Info Tab -->
+                    <div id="basic-info" class="tab-content space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Property Name</label>
+                                <input type="text" name="name" placeholder="Property Name"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                                <input type="text" name="location" placeholder="Location"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                <input type="text" name="type" placeholder="Type"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Subtype</label>
+                                <input type="text" name="subtype" placeholder="Subtype"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">BHK</label>
+                                <input type="number" name="bhk" placeholder="BHK"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Square Feet</label>
+                                <input type="text" name="sqft" placeholder="Square Feet"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Price</label>
+                                <input type="number" name="price" placeholder="Price"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Plot Area</label>
+                                <input type="text" name="plot_area" placeholder="Plot Area"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                                <select name="unit"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                                    <option value="" disabled selected>Select unit</option>
+                                    <option value="cent">Cent</option>
+                                    <option value="acre">Acre</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Listed On</label>
+                                <input type="date" name="listed_on"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images Tab -->
+                    <div id="images" class="tab-content hidden space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Property Images</label>
+                            <div id="image-inputs-wrapper" class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <input type="file" name="images" accept="image/*"
+                                        class="w-full px-3 py-2 text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                        required>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <button type="button" id="add-image-btn"
+                                    class="text-sm text-indigo-600 hover:text-indigo-800 hover:underline flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20"
+                                        fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    Add another image
+                                </button>
+                                <p id="image-limit-warning" class="text-xs text-red-500 mt-1 hidden">Maximum of 10
+                                    images allowed</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info Tab -->
+                    <div id="additional-info" class="tab-content hidden space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Owner Name</label>
+                                <input type="text" name="owner_name" placeholder="Owner Name"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                <input type="text" name="phone_number" placeholder="Phone Number"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                                <input type="text" name="whatsapp_number" placeholder="WhatsApp Number"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Agent</label>
+                                <input type="text" name="agent" placeholder="Agent"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                                <input type="text" name="status" placeholder="Status"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Pricing Options</label>
+                                <input type="text" name="pricing_options" placeholder="Pricing Options"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                            <textarea name="remarks" rows="2" placeholder="Remarks"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Property Description</label>
+                            <textarea name="property_description" rows="3" placeholder="Property Description"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" id="cancelAddModal"
+                        class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Submit Property
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Update Property Modal -->
+<div id="updatePropertyModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-black/50 backdrop-blur-sm">
+    <div class="flex items-center justify-center min-h-screen p-4">
+        <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[100vh] overflow-hidden">
+            <div class="flex justify-between items-center border-b p-6">
+                <h2 class="text-2xl font-bold text-gray-800">Update Property</h2>
+                <button id="closeUpdateModal" class="text-gray-500 hover:text-gray-700 transition">✕</button>
+            </div>
+            <form id="updatePropertyForm" method="POST" action="{% url 'update_property' %}" class="p-6 space-y-6">
+                {% csrf_token %}
+                <input type="hidden" name="property_id" id="update-property-id" />
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input name="name" id="update-name" class="form-input" placeholder="Name" />
+                    <input name="location" id="update-location" class="form-input" placeholder="Location" />
+                    <input name="type" id="update-type" class="form-input" placeholder="Type" />
+                    <input name="subtype" id="update-subtype" class="form-input" placeholder="Subtype" />
+                    <input name="bhk" id="update-bhk" class="form-input" placeholder="BHK" />
+                    <input name="sqft" id="update-sqft" class="form-input" placeholder="Sqft" />
+                    <input name="price" id="update-price" class="form-input" placeholder="Price" />
+                    <input name="plot_area" id="update-plot_area" class="form-input" placeholder="Plot Area" />
+                    <input name="unit" id="update-unit" class="form-input" placeholder="Unit" />
+                    <input type="date" name="listed_on" id="update-listed_on" class="form-input" />
+                    <input name="owner_name" id="update-owner_name" class="form-input" placeholder="Owner Name" />
+                    <input name="phone_number" id="update-phone_number" class="form-input" placeholder="Phone" />
+                    <input name="whatsapp_number" id="update-whatsapp_number" class="form-input"
+                        placeholder="WhatsApp" />
+                    <input name="agent" id="update-agent" class="form-input" placeholder="Agent" />
+                    <input name="status" id="update-status" class="form-input" placeholder="Status" />
+                    <input name="pricing_options" id="update-pricing_options" class="form-input"
+                        placeholder="Pricing Options" />
+                </div>
+                <textarea name="remarks" id="update-remarks" class="form-input w-full" rows="2"
+                    placeholder="Remarks"></textarea>
+                <textarea name="property_description" id="update-property_description" class="form-input w-full"
+                    rows="3" placeholder="Description"></textarea>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t">
+                    <button type="button" id="cancelUpdateModal"
+                        class="px-4 py-2 bg-gray-100 rounded-md">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md">Update</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteConfirmModal"
+    class="fixed inset-0 z-50 hidden bg-black/50 backdrop-blur-sm flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-lg p-6 w-full max-w-md">
+        <h2 class="text-lg font-bold text-gray-800 mb-4">Confirm Deletion</h2>
+        <p class="text-sm text-gray-600 mb-6">Are you sure you want to delete this property?</p>
+        <form method="POST" action="{% url 'delete_property' %}">
+            {% csrf_token %}
+            <input type="hidden" name="property_id" id="delete-property-id" />
+            <div class="flex justify-end space-x-3">
+                <button type="button" id="cancelDeleteModal" class="px-4 py-2 bg-gray-100 rounded-md">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded-md">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    // Modal Toggle
+    document.getElementById('openAddModal').addEventListener('click', () => {
+        document.getElementById('addPropertyModal').classList.remove('hidden');
+    });
+
+    document.getElementById('closeAddModal').addEventListener('click', () => {
+        document.getElementById('addPropertyModal').classList.add('hidden');
+    });
+
+    document.getElementById('cancelAddModal').addEventListener('click', () => {
+        document.getElementById('addPropertyModal').classList.add('hidden');
+    });
+
+    // Tab Switching
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabId = button.getAttribute('data-tab');
+
+            // Update button states
+            tabButtons.forEach(btn => {
+                btn.classList.remove('border-indigo-500', 'text-indigo-600');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            button.classList.add('border-indigo-500', 'text-indigo-600');
+            button.classList.remove('border-transparent', 'text-gray-500');
+
+            // Update tab visibility
+            tabContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(tabId).classList.remove('hidden');
+        });
+    });
+
+    // Dynamic Image Upload Fields
+    const imageWrapper = document.getElementById('image-inputs-wrapper');
+    const addImageBtn = document.getElementById('add-image-btn');
+    const imageWarning = document.getElementById('image-limit-warning');
+    const maxImages = 10;
+
+    addImageBtn.addEventListener('click', () => {
+        const currentInputs = imageWrapper.querySelectorAll('input[type="file"]').length;
+
+        if (currentInputs >= maxImages) {
+            imageWarning.classList.remove('hidden');
+            return;
+        }
+
+        const newInputDiv = document.createElement('div');
+        newInputDiv.className = 'flex items-center space-x-3';
+        newInputDiv.innerHTML = `
+            <input type="file" name="images" accept="image/*" class="w-full px-3 py-2 text-sm text-gray-700 border border-gray-300 rounded-md cursor-pointer focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" required>
+            <button type="button" class="remove-image-btn text-sm text-red-600 hover:text-red-800">
+                Remove
+            </button>
+        `;
+
+        imageWrapper.appendChild(newInputDiv);
+        imageWarning.classList.add('hidden');
+    });
+
+    imageWrapper.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-image-btn')) {
+            e.target.parentElement.remove();
+            imageWarning.classList.add('hidden');
+        }
+    });
+</script>
+<script>
+    // UPDATE MODAL
+    document.querySelectorAll('.update-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.dataset.propertyId;
+            const data = JSON.parse(document.getElementById(`property-${id}`).textContent);
+
+            document.getElementById('update-property-id').value = id;
+            document.getElementById('update-name').value = data.name || '';
+            document.getElementById('update-location').value = data.location || '';
+            document.getElementById('update-type').value = data.type || '';
+            document.getElementById('update-subtype').value = data.subtype || '';
+            document.getElementById('update-bhk').value = data.bhk || '';
+            document.getElementById('update-sqft').value = data.sqft || '';
+            document.getElementById('update-price').value = data.price || '';
+            document.getElementById('update-plot_area').value = data.plot_area || '';
+            document.getElementById('update-unit').value = data.unit || '';
+            document.getElementById('update-listed_on').value = data.listed_on || '';
+            document.getElementById('update-owner_name').value = data.owner_name || '';
+            document.getElementById('update-phone_number').value = data.phone_number || '';
+            document.getElementById('update-whatsapp_number').value = data.whatsapp_number || '';
+            document.getElementById('update-agent').value = data.agent || '';
+            document.getElementById('update-status').value = data.status || '';
+            document.getElementById('update-pricing_options').value = data.pricing_options || '';
+            document.getElementById('update-remarks').value = data.remarks || '';
+            document.getElementById('update-property_description').value = data.property_description || '';
+
+            document.getElementById('updatePropertyModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('closeUpdateModal').onclick = () =>
+        document.getElementById('updatePropertyModal').classList.add('hidden');
+
+    document.getElementById('cancelUpdateModal').onclick = () =>
+        document.getElementById('updatePropertyModal').classList.add('hidden');
+
+    // DELETE MODAL
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.dataset.propertyId;
+            document.getElementById('delete-property-id').value = id;
+            document.getElementById('deleteConfirmModal').classList.remove('hidden');
+        });
+    });
+
+    document.getElementById('cancelDeleteModal').onclick = () =>
+        document.getElementById('deleteConfirmModal').classList.add('hidden');
+</script>
+
+{% endblock %}

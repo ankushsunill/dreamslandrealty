@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-900">User Accounts</h2>
+        <div class="flex space-x-3">
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+                Add User
+            </button>
+        </div>
+    </div>
+
+    {% if users %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for user in users %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow duration-300">
+            <!-- User Header with Photo -->
+            <div class="p-4 flex items-center space-x-4 border-b">
+                <img src="{{ user.photoUrl }}" alt="{{ user.name }}" 
+                    class="h-14 w-14 rounded-full object-cover border-2 border-white shadow" />
+                <div>
+                    <h3 class="font-bold text-gray-900 text-lg">{{ user.name }}</h3>
+                    <p class="text-sm text-gray-600">{{ user.email }}</p>
+                </div>
+            </div>
+            
+            <!-- User Details -->
+            <div class="p-4 space-y-3">
+                <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Last Login:</span>
+                    <span class="text-sm font-medium">{{ user.lastLogin }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">Latest Login:</span>
+                    <span class="text-sm font-medium">{{ user.latestLogin }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-sm text-gray-500">FCM Updated:</span>
+                    <span class="text-sm font-medium">{{ user.fcmLastUpdated }}</span>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="p-4 bg-gray-50 flex justify-end space-x-2">
+                <button class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors">
+                    View
+                </button>
+                <button class="px-3 py-1.5 text-sm border border-gray-300 text-gray-700 rounded hover:bg-gray-100 transition-colors">
+                    Edit
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 bg-white rounded-lg shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <h3 class="mt-4 text-lg font-medium text-gray-900">No users found</h3>
+        <p class="mt-1 text-sm text-gray-500">Get started by adding a new user</p>
+        <div class="mt-6">
+            <button class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors">
+                Add User
+            </button>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

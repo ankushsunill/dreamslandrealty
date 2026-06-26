@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}HubSpot CRM Workspace | Dreamsland Realty{% endblock %}
+
+{% block content %}
+<div class="min-h-[90vh] p-4 md:p-6 bg-gray-50">
+  <div class="max-w-7xl mx-auto space-y-6">
+    <section class="crm-card rounded-3xl p-6 shadow-sm overflow-hidden relative">
+      <div class="absolute inset-0 pointer-events-none opacity-20 bg-gradient-to-br from-indigo-500 via-sky-400 to-emerald-400"></div>
+      <div class="relative flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div>
+          <p class="uppercase tracking-[0.3em] text-xs font-bold text-indigo-500 mb-3">Interview Showcase</p>
+          <h1 class="text-3xl md:text-4xl font-black text-gray-800 mb-3">Dreamsland Realty CRM Command Center</h1>
+          <p class="max-w-3xl text-gray-600 text-base md:text-lg">A HubSpot-style workspace for lead capture, contact lifecycle stages, deal pipeline visibility, property matching, automation playbooks, and reporting.</p>
+        </div>
+        <div class="grid grid-cols-3 gap-3 text-center min-w-[320px]">
+          <div class="crm-card rounded-2xl p-4"><p class="text-2xl font-black text-indigo-600">{{ contacts_count }}</p><p class="crm-muted text-xs font-semibold">CRM Contacts</p></div>
+          <div class="crm-card rounded-2xl p-4"><p class="text-2xl font-black text-emerald-600">{{ properties_count }}</p><p class="crm-muted text-xs font-semibold">Properties</p></div>
+          <div class="crm-card rounded-2xl p-4"><p class="text-2xl font-black text-sky-600">{{ agents_count }}</p><p class="crm-muted text-xs font-semibold">Agents</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div class="xl:col-span-2 crm-card rounded-3xl p-6 shadow-sm">
+        <div class="flex items-center justify-between mb-5">
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">Real Estate Deal Pipeline</h2>
+            <p class="crm-muted text-sm">Lifecycle stages mapped like a HubSpot sales pipeline.</p>
+          </div>
+          <span class="px-3 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-bold">CRM Ready</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {% for stage in pipeline_stages %}
+          <div class="rounded-2xl border border-gray-200 p-4 bg-white/60">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="font-bold text-gray-800">{{ stage.name }}</h3>
+              <span class="text-sm font-black text-indigo-600">{{ stage.count }}</span>
+            </div>
+            <div class="h-2 rounded-full bg-gray-200 overflow-hidden"><div class="h-full bg-indigo-600 rounded-full" style="width: {{ stage.conversion }}%"></div></div>
+            <p class="crm-muted text-xs mt-2">{{ stage.conversion }}% forecast health</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="crm-card rounded-3xl p-6 shadow-sm">
+        <h2 class="text-xl font-bold text-gray-800 mb-2">HubSpot Specialist Proof</h2>
+        <p class="crm-muted text-sm mb-4">Use these points during the interview.</p>
+        <div class="space-y-3">
+          {% for item in specialist_highlights %}
+          <div class="flex items-center gap-3"><span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center"><i class="fas fa-check"></i></span><span class="font-semibold text-gray-800">{{ item }}</span></div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="crm-card rounded-3xl p-6 shadow-sm">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Top Leads with AI-style Score</h2>
+        <div class="space-y-3">
+          {% for lead in scored_leads %}
+          <div class="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 p-4 bg-white/60">
+            <div>
+              <p class="font-bold text-gray-800">{{ lead.name|default:lead.Name|default:"Unnamed Lead" }}</p>
+              <p class="crm-muted text-sm">{{ lead.phone|default:lead.Phone|default:"No phone" }} · {{ lead.lifecycle_stage }}</p>
+            </div>
+            <div class="text-right"><p class="text-2xl font-black text-indigo-600">{{ lead.lead_score }}</p><p class="crm-muted text-xs">score</p></div>
+          </div>
+          {% empty %}
+          <div class="rounded-2xl border border-dashed border-gray-300 p-6 text-center crm-muted">No live Firestore leads loaded. The workspace is demo-safe and ready for CRM data.</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="crm-card rounded-3xl p-6 shadow-sm">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Automation Playbooks</h2>
+        <div class="space-y-4">
+          {% for playbook in automation_playbooks %}
+          <div class="rounded-2xl border border-gray-200 p-4 bg-white/60">
+            <div class="flex items-start gap-3">
+              <span class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-700 flex items-center justify-center"><i class="fas fa-bolt"></i></span>
+              <div>
+                <h3 class="font-bold text-gray-800">{{ playbook.name }}</h3>
+                <p class="crm-muted text-sm"><strong>Trigger:</strong> {{ playbook.trigger }}</p>
+                <p class="crm-muted text-sm"><strong>Actions:</strong> {{ playbook.actions }}</p>
+                <p class="text-emerald-600 text-sm font-bold mt-1">{{ playbook.impact }}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="crm-card rounded-3xl p-6 shadow-sm">
+      <h2 class="text-xl font-bold text-gray-800 mb-4">CRM Object Architecture</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {% for object in hubspot_objects %}
+        <div class="rounded-2xl p-5 bg-gradient-to-br from-gray-50 to-white border border-gray-200">
+          <p class="font-black text-gray-800 mb-2">{{ object.name }}</p>
+          <p class="crm-muted text-sm">{{ object.detail }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

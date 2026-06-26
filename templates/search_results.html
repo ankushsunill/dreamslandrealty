@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Search Results | Dreamsland Realty{% endblock %}
+{% block content %}
+<div class="p-6 bg-gray-50 min-h-[90vh]"><div class="max-w-6xl mx-auto crm-card rounded-3xl p-6 shadow-sm">
+  <h1 class="text-2xl font-black text-gray-800 mb-2">Search Results</h1>
+  <p class="crm-muted mb-6">Showing matches for “{{ query }}”.</p>
+  <div class="overflow-x-auto"><table class="min-w-full text-sm"><thead><tr class="text-left border-b border-gray-200"><th class="p-3">Type</th><th class="p-3">Property ID</th><th class="p-3">Agent ID</th><th class="p-3">Location</th><th class="p-3">Name</th></tr></thead><tbody>
+  {% for item in results %}<tr class="border-b border-gray-100"><td class="p-3 font-bold">{{ item.type }}</td><td class="p-3">{{ item.PropertyId }}</td><td class="p-3">{{ item.AgentId }}</td><td class="p-3">{{ item.Location }}</td><td class="p-3">{{ item.Name }}</td></tr>{% empty %}<tr><td colspan="5" class="p-8 text-center crm-muted">No matching records found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></div>
+{% endblock %}

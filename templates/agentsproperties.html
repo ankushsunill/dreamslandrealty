@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Agent Properties | CRM{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 py-8">
+  <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">All Agents & Their Properties</h2>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for agent in agents %}
+    <div 
+      class="bg-white rounded-xl shadow p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+      onclick="openModal('modal-{{ agent.agentId }}')"
+    >
+      <div class="flex items-center space-x-4 mb-4">
+        <div class="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center">
+          <span class="text-blue-600 font-bold text-lg">{{ agent.agentName|first|upper }}</span>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800">{{ agent.agentName }}</h3>
+          <p class="text-sm text-gray-500">{{ agent.email }}</p>
+        </div>
+      </div>
+      
+      <div class="flex justify-between items-center">
+        <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
+          {{ agent.properties|length }} properties
+        </span>
+        <span class="text-xs text-gray-500">ID: {{ agent.agentId }}</span>
+      </div>
+    </div>
+
+    <!-- Modal for this agent -->
+    <div id="modal-{{ agent.agentId }}" class="fixed hidden inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+      <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-md bg-white">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-bold text-gray-800">{{ agent.agentName }}'s Properties</h3>
+          <button onclick="closeModal('modal-{{ agent.agentId }}')" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+        {% if agent.properties %}
+        <div class="overflow-y-auto max-h-96">
+          <div class="grid grid-cols-1 gap-4">
+            {% for property in agent.properties %}
+            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+              <h4 class="text-lg font-bold text-gray-800">{{ property.title }}</h4>
+              <div class="grid grid-cols-2 gap-2 mt-2 text-sm">
+                <div>
+                  <span class="text-gray-500">ID:</span>
+                  <span>{{ property.propertyId }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Location:</span>
+                  <span>{{ property.location }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Price:</span>
+                  <span class="text-green-600 font-medium">{{ property.price }}</span>
+                </div>
+                <div>
+                  <span class="text-gray-500">Status:</span>
+                  <span class="capitalize">{{ property.status|default:"N/A" }}</span>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% else %}
+        <p class="text-center text-gray-500 py-8">No properties assigned to this agent.</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if not agents %}
+  <p class="text-center text-red-500 font-medium py-12">No agent data available or failed to fetch data.</p>
+  {% endif %}
+</div>
+
+<script>
+  function openModal(modalId) {
+    document.getElementById(modalId).classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeModal(modalId) {
+    document.getElementById(modalId).classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  // Close modal when clicking outside of it
+  window.onclick = function(event) {
+    if (event.target.classList.contains('bg-opacity-50')) {
+      event.target.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
+  }
+</script>
+
+<style>
+  .overflow-hidden {
+    overflow: hidden;
+  }
+</style>
+{% endblock %}

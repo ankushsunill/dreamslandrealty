@@ -1,0 +1,278 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard | Dreamsland Realty{% endblock %}
+
+{% block content %}
+<div class="min-h-[90vh] p-4 md:p-6 bg-gray-50">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Admin Dashboard</h1>
+        <p class="text-sm text-gray-500">Overview of your real estate operations</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="px-3 py-1.5 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Export
+        </button>
+        <div class="relative">
+          <select class="appearance-none bg-white border border-gray-300 rounded-lg px-3 py-1.5 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option>Last 7 Days</option>
+            <option>Last 30 Days</option>
+            <option selected>This Month</option>
+            <option>This Year</option>
+          </select>
+          <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics Section -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Total Properties</p>
+            <p class="text-2xl font-bold text-gray-800">{{ total_properties }}</p>
+          </div>
+          <div class="p-3 rounded-lg bg-indigo-50 text-indigo-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Total Agents</p>
+            <p class="text-2xl font-bold text-gray-800">{{ total_agents }}</p>
+          </div>
+          <div class="p-3 rounded-lg bg-green-50 text-green-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Assigned Properties</p>
+            <p class="text-2xl font-bold text-gray-800">{{ assigned_properties }}</p>
+          </div>
+          <div class="p-3 rounded-lg bg-blue-50 text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-500">Active Customers</p>
+            <p class="text-2xl font-bold text-gray-800">{{ active_customers }}</p>
+          </div>
+          <div class="p-3 rounded-lg bg-purple-50 text-purple-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <!-- Monthly Bar Chart -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-800">{{ month }} Property Uploads</h2>
+          <div class="text-sm text-gray-500">Weekly Breakdown</div>
+        </div>
+        <div class="h-64">
+          <canvas id="monthlyBarChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Lead Status Donut Chart -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-800">Lead Status</h2>
+          <div class="text-sm text-gray-500">Current Month</div>
+        </div>
+        <div class="h-64">
+          <canvas id="leadStatusDonutChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <!-- Weekly Distribution Pie Chart -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold text-gray-800">Weekly Distribution</h2>
+          <div class="text-sm text-gray-500">{{ month }}</div>
+        </div>
+        <div class="h-64">
+          <canvas id="weeklyPieChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 lg:col-span-2">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Recent Activity</h2>
+        <div class="space-y-4 h-64 overflow-y-auto pr-2">
+          <!-- Sample activity items - replace with real data -->
+          <div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg">
+            <div class="p-2 bg-green-50 rounded-full text-green-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium">New property added</p>
+              <p class="text-xs text-gray-500">5 mins ago</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3 p-2 hover:bg-gray-50 rounded-lg">
+            <div class="p-2 bg-blue-50 rounded-full text-blue-600">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-medium">New customer registered</p>
+              <p class="text-xs text-gray-500">25 mins ago</p>
+            </div>
+          </div>
+          <!-- More activity items... -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JSON Data for JavaScript -->
+{{ week_ranges|json_script:"weekLabelsData" }}
+{{ week_counts|json_script:"weekDataValues" }}
+{{ lead_status|json_script:"leadStatusData" }}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Safely parsed data from Django
+  const weekLabels = JSON.parse(document.getElementById("weekLabelsData").textContent);
+  const weekData = JSON.parse(document.getElementById("weekDataValues").textContent);
+  const leadStatusData = JSON.parse(document.getElementById("leadStatusData").textContent);
+
+  // Bar Chart for Monthly Property Uploads
+  const barCtx = document.getElementById('monthlyBarChart').getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: weekLabels,
+      datasets: [{
+        label: 'Properties Uploaded',
+        data: weekData,
+        backgroundColor: 'rgba(79, 70, 229, 0.8)',
+        borderColor: 'rgba(79, 70, 229, 1)',
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            drawBorder: false
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          }
+        }
+      }
+    }
+  });
+
+  // Pie Chart for Weekly Distribution
+  const pieCtx = document.getElementById('weeklyPieChart').getContext('2d');
+  new Chart(pieCtx, {
+    type: 'pie',
+    data: {
+      labels: weekLabels,
+      datasets: [{
+        data: weekData,
+        backgroundColor: [
+          'rgba(79, 70, 229, 0.7)',
+          'rgba(99, 102, 241, 0.7)',
+          'rgba(129, 140, 248, 0.7)',
+          'rgba(167, 139, 250, 0.7)',
+          'rgba(196, 181, 253, 0.7)'
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right'
+        }
+      }
+    }
+  });
+
+  // Donut Chart for Lead Status
+  const donutCtx = document.getElementById('leadStatusDonutChart').getContext('2d');
+  new Chart(donutCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Pending', 'Contacted', 'Converted', 'Lost'],
+      datasets: [{
+        data: leadStatusData,
+        backgroundColor: [
+          'rgba(248, 113, 113, 0.7)',  // Red for Pending
+          'rgba(251, 191, 36, 0.7)',   // Yellow for Contacted
+          'rgba(52, 211, 153, 0.7)',   // Green for Converted
+          'rgba(156, 163, 175, 0.7)'   // Gray for Lost
+        ],
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'right'
+        }
+      },
+      cutout: '70%'
+    }
+  });
+</script>
+{% endblock %}

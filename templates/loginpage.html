@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login | Dreamsland Realty</title>
+
+    <link rel="icon" type="image/png" sizes="32x16" href="{% static 'img/logodream.png' %}" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif']
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        dark: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        
+        .auth-container {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+        }
+        
+        .btn-primary {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen flex items-center justify-center font-inter">
+    <div class="w-full max-w-6xl mx-4">
+        <div class="flex flex-col md:flex-row bg-white rounded-xl overflow-hidden auth-container">
+            <!-- Left Section - Branding & Image -->
+            <div class="hidden md:flex md:w-1/2 bg-gradient-to-br from-primary-100 to-primary-50 p-10 flex-col items-center justify-between">
+                <div class="w-full text-center">
+                    <img src="{% static 'img/logodream.png' %}" alt="Dreamsland Realty Logo" class="w-20 h-20 mx-auto mb-4">
+                    <h1 class="text-3xl font-bold text-dark-900 mb-2">Dreamsland Realty</h1>
+                    <p class="text-dark-800 text-lg">Admin Portal</p>
+                </div>
+                
+                <div class="w-full mt-8">
+                    <img src="https://media.istockphoto.com/id/1409298953/photo/real-estate-agents-shake-hands-after-the-signing-of-the-contract-agreement-is-complete.jpg?s=612x612&w=0&k=20&c=SFybbpGMB0wIoI0tJotFqptzAYK_mICVITNdQIXqnyc=" 
+                         alt="Admin Dashboard" 
+                         class="w-full h-auto rounded-lg object-cover shadow-md border-4 border-white">
+                </div>
+                
+                <div class="w-full mt-6 text-center">
+                    <p class="text-sm text-dark-800 opacity-80">
+                        <i class="fas fa-shield-alt mr-2"></i> Secure Admin Access
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Section - Login Form -->
+            <div class="w-full md:w-1/2 p-8 md:p-12">
+                <div class="max-w-md mx-auto">
+                    <div class="text-center mb-8">
+                        <h2 class="text-3xl font-bold text-dark-900 mb-2">Welcome Home</h2>
+                        <p class="text-gray-600">Sign in to your admin account</p>
+                    </div>
+
+                    <form class="space-y-6" action="{% url 'login' %}" method="POST">
+                        {% if messages %}
+                        <div class="space-y-3">
+                            {% for message in messages %}
+                            <div class="{% if message.tags == 'success' %}bg-green-50 text-green-800{% elif message.tags == 'error' %}bg-red-50 text-red-800{% endif %} px-4 py-3 rounded-lg text-sm border {% if message.tags == 'success' %}border-green-200{% elif message.tags == 'error' %}border-red-200{% endif %} flex items-start">
+                                <i class="{% if message.tags == 'success' %}fas fa-check-circle mr-2 mt-0.5{% elif message.tags == 'error' %}fas fa-exclamation-circle mr-2 mt-0.5{% endif %}"></i>
+                                <span>{{ message }}</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% csrf_token %}
+                        
+                        <div>
+                            <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-user text-gray-400"></i>
+                                </div>
+                                <input type="text" id="username" name="username" required
+                                    class="input-field w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-600"
+                                    placeholder="Enter your username">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-lock text-gray-400"></i>
+                                </div>
+                                <input type="password" id="password" name="password" required
+                                    class="input-field w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary-600"
+                                    placeholder="Enter your password">
+                                <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <i id="eyeIcon" class="fas fa-eye text-gray-400 hover:text-gray-600 cursor-pointer"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        {% if error %}
+                        <div class="bg-red-50 text-red-800 px-4 py-3 rounded-lg text-sm border border-red-200 flex items-start">
+                            <i class="fas fa-exclamation-circle mr-2 mt-0.5"></i>
+                            <span>{{ error }}</span>
+                        </div>
+                        {% endif %}
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <input id="remember-me" name="remember-me" type="checkbox" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                <label for="remember-me" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                            </div>
+                            <div class="text-sm">
+                                <a href="#" class="font-medium text-primary-600 hover:text-primary-500">Forgot password?</a>
+                            </div>
+                        </div>
+
+                        <div>
+                            <button type="submit" class="btn-primary w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                Log in
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-8 text-center text-sm text-gray-500">
+                        <p>© 2025 Dreamsland Realty. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById("password");
+            const eyeIcon = document.getElementById("eyeIcon");
+            
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordInput.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Daily Visits{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">{{ page_title }}</h1>
+                <p class="text-sm text-gray-500 mt-1">Track daily visitor activity</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors shadow-sm flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Export Data
+                </button>
+            </div>
+        </div>
+
+        {% if visits %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% for visit in visits %}
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 overflow-hidden">
+                <!-- Card Header -->
+                <div class="px-5 py-4 border-b bg-gray-50">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-semibold text-gray-800 text-lg">{{ visit.date }}</h3>
+                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                            {{ visit.visitCount }} visit{{ visit.visitCount|pluralize }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Card Body -->
+                <div class="p-5">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-blue-100 p-2 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">Last Visit</p>
+                                <p class="font-medium text-gray-800">{{ visit.lastVisit }}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="flex justify-between items-center text-sm">
+                                <span class="text-gray-500">Daily Trend:</span>
+                                <span class="font-medium {% if visit.trend == 'up' %}text-green-600{% else %}text-gray-600{% endif %}">
+                                    {% if visit.trend == 'up' %}
+                                    ↑ Increased
+                                    {% else %}
+                                    → Steady
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <!-- Simple bar chart visualization -->
+                            <div class="mt-2 flex items-end h-8 gap-1">
+                                <div class="w-3 bg-blue-200 rounded-t-sm" style="height: 30%"></div>
+                                <div class="w-3 bg-blue-300 rounded-t-sm" style="height: 50%"></div>
+                                <div class="w-3 bg-blue-400 rounded-t-sm" style="height: 70%"></div>
+                                <div class="w-3 bg-blue-500 rounded-t-sm" style="height: 90%"></div>
+                                <div class="w-3 bg-blue-600 rounded-t-sm" style="height: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card Footer -->
+                <div class="px-5 py-3 bg-gray-50 border-t flex justify-end">
+                    <button class="px-3 py-1.5 text-sm text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View Details
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="mt-4 text-lg font-medium text-gray-900">No visit data found</h3>
+            <p class="mt-1 text-sm text-gray-500">Visitor data will appear here when available</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
